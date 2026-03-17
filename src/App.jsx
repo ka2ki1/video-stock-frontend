@@ -1,21 +1,50 @@
 import { useState } from "react";
 
 function App() {
+
   const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [memo, setMemo] = useState("");
 
   return (
     <div>
+
       <h1>動画まとめアプリ</h1>
-      <p>React学習 Day1</p>
 
-      <input
-        type="text"
-        placeholder="動画タイトルを入力"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <div>
 
-      <p>入力中のタイトル: {title}</p>
+        <input
+          type="text"
+          placeholder="タイトル"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="URL"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+
+        <textarea
+          placeholder="メモ"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+        />
+
+        <button>登録</button>
+
+      </div>
+
+      <hr />
+
+      <h3>登録前の確認</h3>
+
+      <p>タイトル: {title}</p>
+      <p>URL: {url}</p>
+      <p>メモ: {memo}</p>
+
     </div>
   );
 }
