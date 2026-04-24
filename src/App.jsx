@@ -1,27 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VideoForm from "./components/VideoForm";
 import VideoList from "./components/VideoList";
 
 function App() {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState(() => {
+    const savedVideos = localStorage.getItem("videos");
+    return savedVideos ? JSON.parse(savedVideos) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("videos", JSON.stringify(videos));
+  }, [videos]);
 
   function handleAdd(video) {
     setVideos([...videos, video]);
   }
 
   function handleDelete(id) {
-    setVideos(videos.filter((v) => v.id !== id));
+    setVideos(videos.filter((video) => video.id !== id));
   }
 
   return (
     <div
       style={{
-        maxWidth: "800px",
-        margin: "0 auto",   // ← これが中央寄せ
-        padding: "20px",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "32px",
       }}
     >
-      <h1 style={{ textAlign: "center" }}>動画まとめアプリ</h1>
+      <h1>YouTube動画まとめアプリ</h1>
 
       <VideoForm onAdd={handleAdd} />
 

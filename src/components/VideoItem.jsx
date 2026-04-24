@@ -1,18 +1,32 @@
 function VideoItem({ video, onDelete }) {
   function getEmbedUrl(url) {
+    if (!url) return "";
+
     try {
-      const u = new URL(url);
+      const parsedUrl = new URL(url);
 
-      if (u.hostname === "youtu.be") {
-        return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+      if (
+        parsedUrl.hostname === "www.youtube.com" ||
+        parsedUrl.hostname === "youtube.com"
+      ) {
+        if (parsedUrl.pathname === "/watch") {
+          const videoId = parsedUrl.searchParams.get("v");
+          return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+        }
+
+        if (parsedUrl.pathname.startsWith("/shorts/")) {
+          const videoId = parsedUrl.pathname.split("/shorts/")[1];
+          return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+        }
+
+        if (parsedUrl.pathname.startsWith("/embed/")) {
+          return `https://www.youtube.com${parsedUrl.pathname}`;
+        }
       }
 
-      if (u.pathname === "/watch") {
-        return `https://www.youtube.com/embed/${u.searchParams.get("v")}`;
-      }
-
-      if (u.pathname.startsWith("/shorts/")) {
-        return `https://www.youtube.com/embed/${u.pathname.split("/shorts/")[1]}`;
+      if (parsedUrl.hostname === "youtu.be") {
+        const videoId = parsedUrl.pathname.slice(1);
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
       }
 
       return "";
@@ -24,37 +38,72 @@ function VideoItem({ video, onDelete }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <li style={{ marginBottom: "20px" }}>
-      <h3>{video.title}</h3>
-
-      {embedUrl && (
-        <iframe
-          width="500"
-          height="300"
-          src={embedUrl}
-          title="video"
-          allowFullScreen
-        ></iframe>
-      )}
-
-      <p>{video.memo}</p>
-
-      <button
-        onClick={() => onDelete(video.id)}
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: "10px",
+        overflow: "hidden",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div
         style={{
-          marginTop: "10px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          borderRadius: "6px",
-          border: "none",
-          backgroundColor: "#e53935",
-          color: "#fff",
-          cursor: "pointer",
+          height: "180px",
+          background: "#ddd",
         }}
       >
-        削除
-      </button>
-    </li>
+        {embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title={video.title}
+            style={{
+              width: "100%",
+              height: "100%",
+              border: "none",
+            }}
+            allowFullScreen
+          />
+        ) : (
+          <div
+            style={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "12px",
+              textAlign: "center",
+            }}
+          >
+            YouTube URLではありません
+          </div>
+        )}
+      </div>
+
+      <div
+        style={{
+          padding: "12px",
+          textAlign: "center",
+        }}
+      >
+        <h3>{video.title}</h3>
+
+        {video.memo && <p>{video.memo}</p>}
+
+        <button
+          onClick={() => onDelete(video.id)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "6px",
+            border: "1px solid red",
+            background: "#fff",
+            color: "red",
+            cursor: "pointer",
+          }}
+        >
+          削除
+        </button>
+      </div>
+    </div>
   );
 }
 

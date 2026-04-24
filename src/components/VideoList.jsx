@@ -1,23 +1,21 @@
 import VideoItem from "./VideoItem";
 
 function VideoList({ videos, onDelete }) {
-  return (
-    <div>
-      <h2>動画一覧</h2>
+  if (videos.length === 0) {
+    return <p>まだ動画が登録されていません。</p>;
+  }
 
-      {videos.length === 0 ? (
-        <p>まだありません</p>
-      ) : (
-        <ul>
-          {videos.map((video) => (
-            <VideoItem
-              key={video.id}
-              video={video}
-              onDelete={onDelete}
-            />
-          ))}
-        </ul>
-      )}
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        gap: "20px",
+      }}
+    >
+      {videos.map((video) => (
+        <VideoItem key={video.id} video={video} onDelete={onDelete} />
+      ))}
     </div>
   );
 }

@@ -21,57 +21,60 @@ function VideoForm({ onAdd }) {
   }
 
   const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    fontSize: "16px",
-    marginTop: "6px",
-    borderRadius: "6px",
+    padding: "14px",
+    fontSize: "15px",
+    borderRadius: "8px",
     border: "1px solid #ccc",
   };
 
-  const buttonStyle = {
-    marginTop: "12px",
-    padding: "12px 20px",
-    fontSize: "16px",
-    borderRadius: "6px",
-    border: "none",
-    backgroundColor: "#000",
-    color: "#fff",
-    cursor: "pointer",
-  };
-
   return (
-    <div style={{ maxWidth: "600px", marginBottom: "30px" }}>
-      <div>
-        <label>タイトル</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={inputStyle}
-        />
-      </div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1.2fr auto",
+        gap: "16px",
+        background: "#fff",
+        padding: "20px",
+        borderRadius: "12px",
+        marginBottom: "24px",
+      }}
+    >
+      <input
+        type="text"
+        placeholder="タイトル"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        style={inputStyle}
+      />
 
-      <div style={{ marginTop: "12px" }}>
-        <label>URL</label>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          style={inputStyle}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="YouTube URL"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        style={inputStyle}
+      />
 
-      <div style={{ marginTop: "12px" }}>
-        <label>メモ</label>
-        <textarea
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          style={{ ...inputStyle, height: "100px" }}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="メモ"
+        value={memo}
+        onChange={(e) => setMemo(e.target.value)}
+        style={inputStyle}
+      />
 
-      <button onClick={handleSubmit} style={buttonStyle}>
+      <button
+        onClick={handleSubmit}
+        style={{
+          padding: "0 24px",
+          borderRadius: "8px",
+          border: "none",
+          background: "#000",
+          color: "#fff",
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+      >
         登録
       </button>
     </div>
