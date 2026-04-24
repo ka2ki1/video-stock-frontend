@@ -1,50 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import VideoForm from "./components/VideoForm";
+import VideoList from "./components/VideoList";
 
 function App() {
+  const [videos, setVideos] = useState(() => {
+    const savedVideos = localStorage.getItem("videos");
+    return savedVideos ? JSON.parse(savedVideos) : [];
+  });
 
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [memo, setMemo] = useState("");
+  useEffect(() => {
+    localStorage.setItem("videos", JSON.stringify(videos));
+  }, [videos]);
+
+  function handleAdd(video) {
+    setVideos([...videos, video]);
+  }
+
+  function handleDelete(id) {
+    setVideos(videos.filter((video) => video.id !== id));
+  }
 
   return (
-    <div>
+    <div
+      style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "32px",
+      }}
+    >
+      <h1>YouTube動画まとめアプリ</h1>
 
-      <h1>動画まとめアプリ</h1>
+      <VideoForm onAdd={handleAdd} />
 
-      <div>
-
-        <input
-          type="text"
-          placeholder="タイトル"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-
-        <input
-          type="text"
-          placeholder="URL"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-
-        <textarea
-          placeholder="メモ"
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-        />
-
-        <button>登録</button>
-
-      </div>
-
-      <hr />
-
-      <h3>登録前の確認</h3>
-
-      <p>タイトル: {title}</p>
-      <p>URL: {url}</p>
-      <p>メモ: {memo}</p>
-
+      <VideoList videos={videos} onDelete={handleDelete} />
     </div>
   );
 }
