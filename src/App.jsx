@@ -1,182 +1,112 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import VideoForm from "./components/VideoForm";
+import VideoList from "./components/VideoList";
 
 function App() {
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [memo, setMemo] = useState("");
-  const [videos, setVideos] = useState([]);
-
-  function extractYouTubeVideoId(url) {
-    if (!url) return "";
+  const [videos, setVideos] = useState(() => {
+    const savedVideos = localStorage.getItem("videos");
 
     try {
-      const parsedUrl = new URL(url);
-
-      if (
-        parsedUrl.hostname === "www.youtube.com" ||
-        parsedUrl.hostname === "youtube.com"
-      ) {
-        if (parsedUrl.pathname === "/watch") {
-          return parsedUrl.searchParams.get("v") || "";
-        }
-
-        if (parsedUrl.pathname.startsWith("/embed/")) {
-          return parsedUrl.pathname.split("/embed/")[1];
-        }
-
-        if (parsedUrl.pathname.startsWith("/shorts/")) {
-          return parsedUrl.pathname.split("/shorts/")[1];
-        }
-      }
-
-      if (parsedUrl.hostname === "youtu.be") {
-        return parsedUrl.pathname.slice(1);
-      }
-
-      return "";
+      return savedVideos ? JSON.parse(savedVideos) : [];
     } catch {
-      return "";
+      return [];
     }
+  });
+
+  const [search, setSearch] = useState("");
+  const [sortOrder, setSortOrder] = useState("new");
+
+  useEffect(() => {
+    localStorage.setItem("videos", JSON.stringify(videos));
+  }, [videos]);
+
+  function handleAdd(video) {
+    setVideos([
+      ...videos,
+      {
+        ...video,
+        id: crypto.randomUUID(),
+        favorite: false,
+      },
+    ]);
   }
 
-  function convertToEmbedUrl(url) {
-    const videoId = extractYouTubeVideoId(url);
-
-    if (!videoId) return "";
-
-    return `https://www.youtube.com/embed/${videoId}`;
-  }
-
-  function handleAddVideo() {
-    if (title.trim() === "") return;
-
-    const newVideo = {
-      id: crypto.randomUUID(),
-      title,
-      url,
-      memo,
-    };
-
-    setVideos([...videos, newVideo]);
-
-    setTitle("");
-    setUrl("");
-    setMemo("");
-  }
-
-  function handleDeleteVideo(id) {
+  function handleDelete(id) {
     setVideos(videos.filter((video) => video.id !== id));
   }
 
+  function toggleFavorite(id) {
+    setVideos(
+      videos.map((video) =>
+        video.id === id
+          ? { ...video, favorite: !video.favorite }
+          : video
+      )
+    );
+  }
+
+  const filteredVideos = videos.filter((video) =>
+    video.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const sortedVideos = [...filteredVideos].sort((a, b) => {
+    if (sortOrder === "favorite") {
+      return (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
+    }
+
+    if (sortOrder === "old") {
+      return String(a.id).localeCompare(String(b.id));
+    }
+
+    return String(b.id).localeCompare(String(a.id));
+  });
+
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <h1>動画まとめアプリ</h1>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
+      <h1>YouTube動画まとめアプリ</h1>
+
+      <VideoForm onAdd={handleAdd} />
 
       <div
         style={{
-          border: "1px solid #ccc",
-          padding: "16px",
-          borderRadius: "8px",
+          display: "flex",
+          gap: "12px",
           marginBottom: "24px",
         }}
       >
-        <div style={{ marginBottom: "12px" }}>
-          <label>タイトル</label>
-          <br />
-          <input
-            type="text"
-            placeholder="動画タイトルを入力"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="タイトルで検索"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
 
-        <div style={{ marginBottom: "12px" }}>
-          <label>URL</label>
-          <br />
-          <input
-            type="text"
-            placeholder="YouTubeのURLを入力"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "12px" }}>
-          <label>メモ</label>
-          <br />
-          <textarea
-            placeholder="メモを入力"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            rows="4"
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-          />
-        </div>
-
-        <button onClick={handleAddVideo} style={{ padding: "8px 16px" }}>
-          登録
-        </button>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <option value="new">新しい順</option>
+          <option value="old">古い順</option>
+          <option value="favorite">お気に入り優先</option>
+        </select>
       </div>
 
-      <h2>動画一覧</h2>
-
-      {videos.length === 0 ? (
-        <p>まだ動画が登録されていません。</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {videos.map((video) => {
-            const embedUrl = convertToEmbedUrl(video.url);
-
-            return (
-              <li
-                key={video.id}
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "16px",
-                  marginBottom: "16px",
-                }}
-              >
-                <h3>{video.title}</h3>
-
-                {embedUrl ? (
-                  <iframe
-                    width="100%"
-                    height="315"
-                    src={embedUrl}
-                    title={video.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    style={{ marginBottom: "12px", border: "none" }}
-                  ></iframe>
-                ) : (
-                  <p style={{ color: "red" }}>
-                    YouTubeのURLとして認識できませんでした。
-                  </p>
-                )}
-
-                <p>
-                  <strong>URL:</strong> {video.url}
-                </p>
-
-                <p>
-                  <strong>メモ:</strong> {video.memo}
-                </p>
-
-                <button
-                  onClick={() => handleDeleteVideo(video.id)}
-                  style={{ marginTop: "8px", padding: "8px 16px" }}
-                >
-                  削除
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <VideoList
+        videos={sortedVideos}
+        onDelete={handleDelete}
+        onToggleFavorite={toggleFavorite}
+      />
     </div>
   );
 }
