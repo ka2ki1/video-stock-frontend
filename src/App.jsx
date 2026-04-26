@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VideoForm from "./components/VideoForm";
 import VideoList from "./components/VideoList";
+import { arrayMove } from "@dnd-kit/sortable";
 
 function App() {
   const [videos, setVideos] = useState(() => {
@@ -13,9 +14,6 @@ function App() {
     }
   });
 
-  const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState("new");
-
   useEffect(() => {
     localStorage.setItem("videos", JSON.stringify(videos));
   }, [videos]);
@@ -26,7 +24,6 @@ function App() {
       {
         ...video,
         id: crypto.randomUUID(),
-        favorite: false,
       },
     ]);
   }
@@ -35,31 +32,18 @@ function App() {
     setVideos(videos.filter((video) => video.id !== id));
   }
 
-  function toggleFavorite(id) {
-    setVideos(
-      videos.map((video) =>
-        video.id === id
-          ? { ...video, favorite: !video.favorite }
-          : video
-      )
-    );
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    setVideos((items) => {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+
+      return arrayMove(items, oldIndex, newIndex);
+    });
   }
-
-  const filteredVideos = videos.filter((video) =>
-    video.title.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const sortedVideos = [...filteredVideos].sort((a, b) => {
-    if (sortOrder === "favorite") {
-      return (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
-    }
-
-    if (sortOrder === "old") {
-      return String(a.id).localeCompare(String(b.id));
-    }
-
-    return String(b.id).localeCompare(String(a.id));
-  });
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
@@ -67,45 +51,10 @@ function App() {
 
       <VideoForm onAdd={handleAdd} />
 
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          marginBottom: "24px",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="タイトルで検索"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="new">新しい順</option>
-          <option value="old">古い順</option>
-          <option value="favorite">お気に入り優先</option>
-        </select>
-      </div>
-
       <VideoList
-        videos={sortedVideos}
+        videos={videos}
         onDelete={handleDelete}
-        onToggleFavorite={toggleFavorite}
+        onDragEnd={handleDragEnd}
       />
     </div>
   );

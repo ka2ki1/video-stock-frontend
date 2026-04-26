@@ -1,4 +1,25 @@
-function VideoItem({ video, onDelete, onToggleFavorite }) {
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+function VideoItem({ video, onDelete }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: video.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    background: "#fff",
+    borderRadius: "10px",
+    overflow: "hidden",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    cursor: "grab",
+  };
+
   function getEmbedUrl(url) {
     if (!url) return "";
 
@@ -39,12 +60,10 @@ function VideoItem({ video, onDelete, onToggleFavorite }) {
 
   return (
     <div
-      style={{
-        background: "#fff",
-        borderRadius: "10px",
-        overflow: "hidden",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      }}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={style}
     >
       <div
         style={{
@@ -60,6 +79,7 @@ function VideoItem({ video, onDelete, onToggleFavorite }) {
               width: "100%",
               height: "100%",
               border: "none",
+              pointerEvents: "none",
             }}
             allowFullScreen
           />
@@ -83,21 +103,6 @@ function VideoItem({ video, onDelete, onToggleFavorite }) {
         <h3>{video.title}</h3>
 
         {video.memo && <p>{video.memo}</p>}
-
-        <button
-          onClick={() => onToggleFavorite(video.id)}
-          style={{
-            padding: "8px 14px",
-            marginRight: "8px",
-            borderRadius: "6px",
-            border: "1px solid #f5b301",
-            background: video.favorite ? "#f5b301" : "#fff",
-            color: video.favorite ? "#fff" : "#f5b301",
-            cursor: "pointer",
-          }}
-        >
-          {video.favorite ? "★" : "☆"}
-        </button>
 
         <button
           onClick={() => onDelete(video.id)}
