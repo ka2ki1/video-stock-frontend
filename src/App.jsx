@@ -15,6 +15,7 @@ function App() {
   });
 
   const [editingVideo, setEditingVideo] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   useEffect(() => {
     localStorage.setItem("videos", JSON.stringify(videos));
@@ -61,6 +62,15 @@ function App() {
     });
   }
 
+  const filteredVideos = videos.filter((video) => {
+    const keyword = searchKeyword.toLowerCase();
+
+    return (
+      video.title.toLowerCase().includes(keyword) ||
+      (video.memo || "").toLowerCase().includes(keyword)
+    );
+  });
+
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
       <h1>YouTube動画まとめアプリ</h1>
@@ -72,8 +82,23 @@ function App() {
         onCancelEdit={() => setEditingVideo(null)}
       />
 
+      <input
+        type="text"
+        placeholder="タイトル・メモで検索"
+        value={searchKeyword}
+        onChange={(e) => setSearchKeyword(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "12px",
+          marginBottom: "24px",
+          borderRadius: "8px",
+          border: "1px solid #ccc",
+          fontSize: "16px",
+        }}
+      />
+
       <VideoList
-        videos={videos}
+        videos={filteredVideos}
         onDelete={handleDelete}
         onEdit={handleEdit}
         onDragEnd={handleDragEnd}
