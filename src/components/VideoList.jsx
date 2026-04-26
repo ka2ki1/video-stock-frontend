@@ -1,4 +1,3 @@
-import VideoItem from "./VideoItem";
 import {
   DndContext,
   closestCenter,
@@ -7,8 +6,9 @@ import {
   SortableContext,
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
+import VideoItem from "./VideoItem";
 
-function VideoList({ videos, onDelete, onDragEnd }) {
+function VideoList({ videos, onDelete, onEdit, onDragEnd }) {
   if (videos.length === 0) {
     return <p>動画がありません。</p>;
   }
@@ -31,6 +31,7 @@ function VideoList({ videos, onDelete, onDragEnd }) {
               key={video.id}
               video={video}
               onDelete={onDelete}
+              onEdit={onEdit}
             />
           ))}
         </div>

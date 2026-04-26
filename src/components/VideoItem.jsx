@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-function VideoItem({ video, onDelete }) {
+function VideoItem({ video, onDelete, onEdit }) {
   const {
     attributes,
     listeners,
@@ -17,7 +17,6 @@ function VideoItem({ video, onDelete }) {
     borderRadius: "10px",
     overflow: "hidden",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-    cursor: "grab",
   };
 
   function getEmbedUrl(url) {
@@ -39,10 +38,6 @@ function VideoItem({ video, onDelete }) {
           const videoId = parsedUrl.pathname.split("/shorts/")[1];
           return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
         }
-
-        if (parsedUrl.pathname.startsWith("/embed/")) {
-          return `https://www.youtube.com${parsedUrl.pathname}`;
-        }
       }
 
       if (parsedUrl.hostname === "youtu.be") {
@@ -59,16 +54,14 @@ function VideoItem({ video, onDelete }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={style}
-    >
+    <div ref={setNodeRef} style={style}>
       <div
+        {...attributes}
+        {...listeners}
         style={{
           height: "180px",
           background: "#ddd",
+          cursor: "grab",
         }}
       >
         {embedUrl ? (
@@ -103,6 +96,21 @@ function VideoItem({ video, onDelete }) {
         <h3>{video.title}</h3>
 
         {video.memo && <p>{video.memo}</p>}
+
+        <button
+          onClick={() => onEdit(video)}
+          style={{
+            padding: "8px 14px",
+            marginRight: "8px",
+            borderRadius: "6px",
+            border: "1px solid #1976d2",
+            background: "#fff",
+            color: "#1976d2",
+            cursor: "pointer",
+          }}
+        >
+          編集
+        </button>
 
         <button
           onClick={() => onDelete(video.id)}
