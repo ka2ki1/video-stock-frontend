@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { arrayMove } from "@dnd-kit/sortable";
 import VideoForm from "./components/VideoForm";
 import VideoList from "./components/VideoList";
 
@@ -13,8 +14,9 @@ function App() {
     }
   });
 
-  const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState("new");
+  const [editingVideo, setEditingVideo] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [showOnlyFavorite, setShowOnlyFavorite] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("videos", JSON.stringify(videos));
@@ -31,11 +33,25 @@ function App() {
     ]);
   }
 
+  function handleUpdate(updatedVideo) {
+    setVideos(
+      videos.map((video) =>
+        video.id === updatedVideo.id ? updatedVideo : video
+      )
+    );
+
+    setEditingVideo(null);
+  }
+
   function handleDelete(id) {
     setVideos(videos.filter((video) => video.id !== id));
   }
 
-  function toggleFavorite(id) {
+  function handleEdit(video) {
+    setEditingVideo(video);
+  }
+
+  function handleToggleFavorite(id) {
     setVideos(
       videos.map((video) =>
         video.id === id
@@ -45,27 +61,41 @@ function App() {
     );
   }
 
-  const filteredVideos = videos.filter((video) =>
-    video.title.toLowerCase().includes(search.toLowerCase())
-  );
+  function handleDragEnd(event) {
+    const { active, over } = event;
 
-  const sortedVideos = [...filteredVideos].sort((a, b) => {
-    if (sortOrder === "favorite") {
-      return (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
-    }
+    if (!over || active.id === over.id) return;
 
-    if (sortOrder === "old") {
-      return String(a.id).localeCompare(String(b.id));
-    }
+    setVideos((items) => {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
 
-    return String(b.id).localeCompare(String(a.id));
+      return arrayMove(items, oldIndex, newIndex);
+    });
+  }
+
+  const filteredVideos = videos.filter((video) => {
+    const keyword = searchKeyword.toLowerCase();
+
+    const matchesKeyword =
+      video.title.toLowerCase().includes(keyword) ||
+      (video.memo || "").toLowerCase().includes(keyword);
+
+    const matchesFavorite = showOnlyFavorite ? video.favorite : true;
+
+    return matchesKeyword && matchesFavorite;
   });
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
       <h1>YouTube動画まとめアプリ</h1>
 
-      <VideoForm onAdd={handleAdd} />
+      <VideoForm
+        onAdd={handleAdd}
+        onUpdate={handleUpdate}
+        editingVideo={editingVideo}
+        onCancelEdit={() => setEditingVideo(null)}
+      />
 
       <div
         style={{
@@ -76,36 +106,40 @@ function App() {
       >
         <input
           type="text"
-          placeholder="タイトルで検索"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          placeholder="タイトル・メモで検索"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
           style={{
             flex: 1,
-            padding: "10px",
-            borderRadius: "6px",
+            padding: "12px",
+            borderRadius: "8px",
             border: "1px solid #ccc",
+            fontSize: "16px",
           }}
         />
 
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
+        <button
+          onClick={() => setShowOnlyFavorite(!showOnlyFavorite)}
           style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
+            padding: "0 18px",
+            borderRadius: "8px",
+            border: "1px solid #f5b301",
+            background: showOnlyFavorite ? "#f5b301" : "#fff",
+            color: showOnlyFavorite ? "#fff" : "#f5b301",
+            fontWeight: "bold",
+            cursor: "pointer",
           }}
         >
-          <option value="new">新しい順</option>
-          <option value="old">古い順</option>
-          <option value="favorite">お気に入り優先</option>
-        </select>
+          {showOnlyFavorite ? "★ お気に入り表示中" : "☆ お気に入りのみ"}
+        </button>
       </div>
 
       <VideoList
-        videos={sortedVideos}
+        videos={filteredVideos}
         onDelete={handleDelete}
-        onToggleFavorite={toggleFavorite}
+        onEdit={handleEdit}
+        onToggleFavorite={handleToggleFavorite}
+        onDragEnd={handleDragEnd}
       />
     </div>
   );
