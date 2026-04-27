@@ -4,12 +4,14 @@ function VideoForm({ onAdd, onUpdate, editingVideo, onCancelEdit }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [memo, setMemo] = useState("");
+  const [tag, setTag] = useState("勉強");
 
   useEffect(() => {
     if (editingVideo) {
       setTitle(editingVideo.title);
       setUrl(editingVideo.url);
       setMemo(editingVideo.memo || "");
+      setTag(editingVideo.tag || "勉強");
     }
   }, [editingVideo]);
 
@@ -17,6 +19,7 @@ function VideoForm({ onAdd, onUpdate, editingVideo, onCancelEdit }) {
     setTitle("");
     setUrl("");
     setMemo("");
+    setTag("勉強");
   }
 
   function handleSubmit() {
@@ -28,12 +31,14 @@ function VideoForm({ onAdd, onUpdate, editingVideo, onCancelEdit }) {
         title,
         url,
         memo,
+        tag,
       });
     } else {
       onAdd({
         title,
         url,
         memo,
+        tag,
       });
     }
 
@@ -57,8 +62,8 @@ function VideoForm({ onAdd, onUpdate, editingVideo, onCancelEdit }) {
       style={{
         display: "grid",
         gridTemplateColumns: editingVideo
-          ? "1fr 1fr 1.2fr auto auto"
-          : "1fr 1fr 1.2fr auto",
+          ? "1fr 1fr 1fr 120px auto auto"
+          : "1fr 1fr 1fr 120px auto",
         gap: "16px",
         background: "#fff",
         padding: "20px",
@@ -89,6 +94,18 @@ function VideoForm({ onAdd, onUpdate, editingVideo, onCancelEdit }) {
         onChange={(e) => setMemo(e.target.value)}
         style={inputStyle}
       />
+
+      <select
+        value={tag}
+        onChange={(e) => setTag(e.target.value)}
+        style={inputStyle}
+      >
+        <option value="勉強">勉強</option>
+        <option value="音楽">音楽</option>
+        <option value="料理">料理</option>
+        <option value="筋トレ">筋トレ</option>
+        <option value="その他">その他</option>
+      </select>
 
       <button
         onClick={handleSubmit}

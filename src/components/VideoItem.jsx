@@ -114,6 +114,20 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
 
         <h3>{video.title}</h3>
 
+        {video.tag && (
+          <p
+            style={{
+              display: "inline-block",
+              padding: "4px 8px",
+              borderRadius: "999px",
+              background: "#f1f1f1",
+              fontSize: "12px",
+            }}
+          >
+            {video.tag}
+          </p>
+        )}
+
         {video.memo && <p>{video.memo}</p>}
 
         <button

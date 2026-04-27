@@ -17,6 +17,7 @@ function App() {
   const [editingVideo, setEditingVideo] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showOnlyFavorite, setShowOnlyFavorite] = useState(false);
+  const [selectedTag, setSelectedTag] = useState("all");
 
   useEffect(() => {
     localStorage.setItem("videos", JSON.stringify(videos));
@@ -83,7 +84,10 @@ function App() {
 
     const matchesFavorite = showOnlyFavorite ? video.favorite : true;
 
-    return matchesKeyword && matchesFavorite;
+    const matchesTag =
+      selectedTag === "all" ? true : video.tag === selectedTag;
+
+    return matchesKeyword && matchesFavorite && matchesTag;
   });
 
   return (
@@ -117,6 +121,23 @@ function App() {
             fontSize: "16px",
           }}
         />
+
+        <select
+          value={selectedTag}
+          onChange={(e) => setSelectedTag(e.target.value)}
+          style={{
+            padding: "12px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <option value="all">すべて</option>
+          <option value="勉強">勉強</option>
+          <option value="音楽">音楽</option>
+          <option value="料理">料理</option>
+          <option value="筋トレ">筋トレ</option>
+          <option value="その他">その他</option>
+        </select>
 
         <button
           onClick={() => setShowOnlyFavorite(!showOnlyFavorite)}
