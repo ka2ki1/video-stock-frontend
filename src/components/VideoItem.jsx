@@ -1,4 +1,4 @@
-function VideoItem({ video, onDelete }) {
+
   function getEmbedUrl(url) {
     if (!url) return "";
 
@@ -38,28 +38,18 @@ function VideoItem({ video, onDelete }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: "10px",
-        overflow: "hidden",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      }}
-    >
-      <div
-        style={{
-          height: "180px",
-          background: "#ddd",
+
         }}
       >
         {embedUrl ? (
           <iframe
             src={embedUrl}
-            title={video.title}
+
             style={{
               width: "100%",
               height: "100%",
               border: "none",
+
             }}
             allowFullScreen
           />
@@ -79,17 +69,13 @@ function VideoItem({ video, onDelete }) {
         )}
       </div>
 
-      <div
-        style={{
-          padding: "12px",
-          textAlign: "center",
-        }}
-      >
+
         <h3>{video.title}</h3>
 
         {video.memo && <p>{video.memo}</p>}
 
         <button
+
           onClick={() => onDelete(video.id)}
           style={{
             padding: "8px 14px",
