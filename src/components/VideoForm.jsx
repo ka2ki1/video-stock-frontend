@@ -1,23 +1,9 @@
-import { useState } from "react";
 
-function VideoForm({ onAdd }) {
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [memo, setMemo] = useState("");
 
   function handleSubmit() {
     if (title.trim() === "") return;
 
-    onAdd({
-      id: crypto.randomUUID(),
-      title,
-      url,
-      memo,
-    });
 
-    setTitle("");
-    setUrl("");
-    setMemo("");
   }
 
   const inputStyle = {
@@ -31,7 +17,7 @@ function VideoForm({ onAdd }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr 1.2fr auto",
+
         gap: "16px",
         background: "#fff",
         padding: "20px",
@@ -63,20 +49,19 @@ function VideoForm({ onAdd }) {
         style={inputStyle}
       />
 
+
       <button
         onClick={handleSubmit}
         style={{
           padding: "0 24px",
           borderRadius: "8px",
           border: "none",
-          background: "#000",
-          color: "#fff",
+
           fontWeight: "bold",
           cursor: "pointer",
         }}
       >
-        登録
-      </button>
+
     </div>
   );
 }
