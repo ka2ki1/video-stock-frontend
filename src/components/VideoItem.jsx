@@ -70,16 +70,6 @@
       </div>
 
 
-          onClick={() => onDelete(video.id)}
-          style={{
-            padding: "8px 14px",
-            borderRadius: "6px",
-            border: "1px solid red",
-            background: "#fff",
-            color: "red",
-            cursor: "pointer",
-          }}
-        >
           削除
         </button>
       </div>
