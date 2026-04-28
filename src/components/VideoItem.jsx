@@ -1,24 +1,3 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
-function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: video.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    background: "#fff",
-    borderRadius: "10px",
-    overflow: "hidden",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-    position: "relative",
-  };
 
   function getEmbedUrl(url) {
     if (!url) return "";
@@ -59,42 +38,18 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <button
-        {...attributes}
-        {...listeners}
-        style={{
-          position: "absolute",
-          top: "8px",
-          right: "8px",
-          zIndex: 10,
-          width: "32px",
-          height: "32px",
-          borderRadius: "6px",
-          border: "none",
-          background: "rgba(0,0,0,0.55)",
-          color: "#fff",
-          cursor: "grab",
-        }}
-        title="ドラッグして並び替え"
-      >
-        ☰
-      </button>
 
-      <div
-        style={{
-          height: "180px",
-          background: "#ddd",
         }}
       >
         {embedUrl ? (
           <iframe
             src={embedUrl}
-            title={video.title || "YouTube video"}
+
             style={{
               width: "100%",
               height: "100%",
               border: "none",
+
             }}
             allowFullScreen
           />
@@ -114,19 +69,7 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
         )}
       </div>
 
-      <div style={{ padding: "12px", textAlign: "center" }}>
-        <button onClick={() => onToggleFavorite(video.id)}>
-          {video.favorite ? "★" : "☆"}
-        </button>
 
-        <h3>{video.title}</h3>
-
-        {video.tag && <p>{video.tag}</p>}
-        {video.memo && <p>{video.memo}</p>}
-
-        <button onClick={() => onEdit(video)}>編集</button>
-
-        <button onClick={() => onDelete(video.id)}>
           削除
         </button>
       </div>
