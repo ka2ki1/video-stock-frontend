@@ -38,10 +38,6 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
           const videoId = parsedUrl.pathname.split("/shorts/")[1];
           return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
         }
-
-        if (parsedUrl.pathname.startsWith("/embed/")) {
-          return `https://www.youtube.com${parsedUrl.pathname}`;
-        }
       }
 
       if (parsedUrl.hostname === "youtu.be") {
@@ -58,10 +54,43 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        position: "relative",
+      }}
+    >
       <div
         style={{
+<<<<<<< HEAD
           position: "relative",
+=======
+          position: "absolute",
+          top: "8px",
+          right: "8px",
+          cursor: "grab",
+          fontSize: "18px",
+          background: "rgba(255,255,255,0.4)",
+          backdropFilter: "blur(6px)",
+          borderRadius: "6px",
+          padding: "2px 6px",
+          transition: "0.2s",
+          zIndex: 10,
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.background = "rgba(255,255,255,0.8)")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.background = "rgba(255,255,255,0.4)")
+        }
+      >
+        ☰
+      </div>
+
+      <div
+        style={{
+>>>>>>> 7d00ecf (style: improve drag handle transparency)
           height: "180px",
           background: "#ddd",
         }}
@@ -83,8 +112,6 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "12px",
-              textAlign: "center",
             }}
           >
             YouTube URLではありません
