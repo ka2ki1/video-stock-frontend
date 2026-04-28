@@ -1,3 +1,23 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: video.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    background: "#fff",
+    borderRadius: "10px",
+    overflow: "hidden",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  };
 
   function getEmbedUrl(url) {
     if (!url) return "";
@@ -38,18 +58,21 @@
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-
+    <div ref={setNodeRef} style={style}>
+      <div
+        style={{
+          position: "relative",
+          height: "180px",
+          background: "#ddd",
         }}
       >
         {embedUrl ? (
           <iframe
             src={embedUrl}
-
             style={{
               width: "100%",
               height: "100%",
               border: "none",
-
             }}
             allowFullScreen
           />
@@ -67,9 +90,92 @@
             YouTube URLではありません
           </div>
         )}
+
+        <button
+          {...attributes}
+          {...listeners}
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+            width: "34px",
+            height: "34px",
+            borderRadius: "50%",
+            border: "none",
+            background: "rgba(0, 0, 0, 0.35)",
+            color: "#fff",
+            cursor: "grab",
+            fontSize: "18px",
+            lineHeight: "34px",
+            textAlign: "center",
+            opacity: 0.65,
+          }}
+          title="ドラッグして並び替え"
+        >
+          ☰
+        </button>
       </div>
 
+      <div style={{ padding: "12px", textAlign: "center" }}>
+        <button
+          onClick={() => onToggleFavorite(video.id)}
+          style={{
+            padding: "6px 10px",
+            marginBottom: "8px",
+            borderRadius: "6px",
+            border: "1px solid #f5b301",
+            background: video.favorite ? "#f5b301" : "#fff",
+            color: video.favorite ? "#fff" : "#f5b301",
+            cursor: "pointer",
+          }}
+        >
+          {video.favorite ? "★" : "☆"}
+        </button>
 
+        <h3>{video.title}</h3>
+
+        {video.tag && (
+          <p
+            style={{
+              display: "inline-block",
+              padding: "4px 8px",
+              borderRadius: "999px",
+              background: "#f1f1f1",
+              fontSize: "12px",
+            }}
+          >
+            {video.tag}
+          </p>
+        )}
+
+        {video.memo && <p>{video.memo}</p>}
+
+        <button
+          onClick={() => onEdit(video)}
+          style={{
+            padding: "8px 14px",
+            marginRight: "8px",
+            borderRadius: "6px",
+            border: "1px solid #1976d2",
+            background: "#fff",
+            color: "#1976d2",
+            cursor: "pointer",
+          }}
+        >
+          編集
+        </button>
+
+        <button
+          onClick={() => onDelete(video.id)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "6px",
+            border: "1px solid red",
+            background: "#fff",
+            color: "red",
+            cursor: "pointer",
+          }}
+        >
           削除
         </button>
       </div>
