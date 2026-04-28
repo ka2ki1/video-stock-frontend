@@ -92,7 +92,7 @@ function App() {
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
-      <h1>YouTube動画まとめアプリ</h1>
+      <h1 style={{ textAlign: "center" }}>YouTube動画まとめアプリ</h1>
 
       <VideoForm
         onAdd={handleAdd}
