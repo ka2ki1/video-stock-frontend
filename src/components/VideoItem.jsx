@@ -17,6 +17,7 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
     borderRadius: "10px",
     overflow: "hidden",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    position: "relative",
   };
 
   function getEmbedUrl(url) {
@@ -59,13 +60,35 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div
+      <button
         {...attributes}
         {...listeners}
         style={{
+          position: "absolute",
+          top: "8px",
+          right: "8px",
+          width: "34px",
+          height: "34px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0, 0, 0, 0.35)",
+          color: "#fff",
+          cursor: "grab",
+          fontSize: "18px",
+          lineHeight: "34px",
+          textAlign: "center",
+          opacity: 0.65,
+          zIndex: 10,
+        }}
+        title="ドラッグして並び替え"
+      >
+        ☰
+      </button>
+
+      <div
+        style={{
           height: "180px",
           background: "#ddd",
-          cursor: "grab",
         }}
       >
         {embedUrl ? (
@@ -76,7 +99,6 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
               width: "100%",
               height: "100%",
               border: "none",
-              pointerEvents: "none",
             }}
             allowFullScreen
           />
@@ -87,8 +109,6 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "12px",
-              textAlign: "center",
             }}
           >
             YouTube URLではありません
