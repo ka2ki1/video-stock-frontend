@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
-
 import VideoForm from "./components/VideoForm";
 import VideoList from "./components/VideoList";
+
+const ITEMS_PER_PAGE = 20;
 
 function App() {
   const [videos, setVideos] = useState(() => {
@@ -19,10 +20,15 @@ function App() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showOnlyFavorite, setShowOnlyFavorite] = useState(false);
   const [selectedTag, setSelectedTag] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     localStorage.setItem("videos", JSON.stringify(videos));
   }, [videos]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchKeyword, selectedTag, showOnlyFavorite]);
 
   function handleAdd(video) {
     setVideos([
@@ -91,6 +97,16 @@ function App() {
     return matchesKeyword && matchesFavorite && matchesTag;
   });
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredVideos.length / ITEMS_PER_PAGE)
+  );
+
+  const paginatedVideos = filteredVideos.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px" }}>
       <h1 style={{ textAlign: "center" }}>YouTube動画まとめアプリ</h1>
@@ -157,12 +173,42 @@ function App() {
       </div>
 
       <VideoList
-        videos={filteredVideos}
+        videos={paginatedVideos}
         onDelete={handleDelete}
         onEdit={handleEdit}
         onToggleFavorite={handleToggleFavorite}
         onDragEnd={handleDragEnd}
       />
+
+      <div style={{ marginTop: "24px", textAlign: "center" }}>
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          style={{
+            padding: "8px 14px",
+            marginRight: "12px",
+            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+          }}
+        >
+          前へ
+        </button>
+
+        <span>
+          {currentPage} / {totalPages}
+        </span>
+
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          style={{
+            padding: "8px 14px",
+            marginLeft: "12px",
+            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+          }}
+        >
+          次へ
+        </button>
+      </div>
     </div>
   );
 }
