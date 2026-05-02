@@ -17,6 +17,7 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
     borderRadius: "10px",
     overflow: "hidden",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    position: "relative",
   };
 
   function getEmbedUrl(url) {
@@ -38,6 +39,10 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
           const videoId = parsedUrl.pathname.split("/shorts/")[1];
           return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
         }
+
+        if (parsedUrl.pathname.startsWith("/embed/")) {
+          return `https://www.youtube.com${parsedUrl.pathname}`;
+        }
       }
 
       if (parsedUrl.hostname === "youtu.be") {
@@ -54,43 +59,34 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        position: "relative",
-      }}
-    >
-      <div
+    <div ref={setNodeRef} style={style}>
+      <button
+        {...attributes}
+        {...listeners}
         style={{
-<<<<<<< HEAD
-          position: "relative",
-=======
           position: "absolute",
           top: "8px",
           right: "8px",
+          width: "34px",
+          height: "34px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0, 0, 0, 0.35)",
+          color: "#fff",
           cursor: "grab",
           fontSize: "18px",
-          background: "rgba(255,255,255,0.4)",
-          backdropFilter: "blur(6px)",
-          borderRadius: "6px",
-          padding: "2px 6px",
-          transition: "0.2s",
+          lineHeight: "34px",
+          textAlign: "center",
+          opacity: 0.65,
           zIndex: 10,
         }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.background = "rgba(255,255,255,0.8)")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.background = "rgba(255,255,255,0.4)")
-        }
+        title="ドラッグして並び替え"
       >
         ☰
-      </div>
+      </button>
 
       <div
         style={{
->>>>>>> 7d00ecf (style: improve drag handle transparency)
           height: "180px",
           background: "#ddd",
         }}
@@ -98,6 +94,7 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
         {embedUrl ? (
           <iframe
             src={embedUrl}
+            title={video.title || "YouTube video"}
             style={{
               width: "100%",
               height: "100%",
@@ -117,30 +114,6 @@ function VideoItem({ video, onDelete, onEdit, onToggleFavorite }) {
             YouTube URLではありません
           </div>
         )}
-
-        <button
-          {...attributes}
-          {...listeners}
-          style={{
-            position: "absolute",
-            top: "8px",
-            right: "8px",
-            width: "34px",
-            height: "34px",
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(0, 0, 0, 0.35)",
-            color: "#fff",
-            cursor: "grab",
-            fontSize: "18px",
-            lineHeight: "34px",
-            textAlign: "center",
-            opacity: 0.65,
-          }}
-          title="ドラッグして並び替え"
-        >
-          ☰
-        </button>
       </div>
 
       <div style={{ padding: "12px", textAlign: "center" }}>
